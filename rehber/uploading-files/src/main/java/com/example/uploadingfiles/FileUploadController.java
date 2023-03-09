@@ -1,8 +1,9 @@
 package com.example.uploadingfiles;
 
-import jakarta.annotation.Resource;
-import org.apache.coyote.Response;
+import com.example.uploadingfiles.storage.StorageFileNotFoundException;
+import com.example.uploadingfiles.storage.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -13,7 +14,6 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Controller
@@ -39,7 +39,7 @@ public class FileUploadController {
     public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
         Resource file = storageService.loadAsResource(filename);
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + file.getFileName() +
+                "attachment; filename=\"" + file.getFilename() +
                 "\"").body(file);
     }
 
@@ -51,7 +51,7 @@ public class FileUploadController {
         return "redirect:/";
     }
 
-    @ExceptionHandler(StorageFileNotFoundException.class)
+        @ExceptionHandler(StorageFileNotFoundException.class)
     public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
         return ResponseEntity.notFound().build();
     }
